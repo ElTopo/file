@@ -311,14 +311,16 @@ ${MAGIC}: $(EXTRA_DIST) $(FILE_COMPILE_DEP)
 	@mkdir magic && cp -p $(EXTRA_DIST) magic
 	@(if expr "${FILE_COMPILE}" : '.*/.*' > /dev/null; then \
 	    echo "Using ${FILE_COMPILE} to generate ${MAGIC}" > /dev/null; \
+		$(FILE_COMPILE) -C -m magic; \
 	  else \
 	    v=$$(${FILE_COMPILE} --version | sed -e s/file-// -e q); \
 	    if [ "$$v" != "${PACKAGE_VERSION}" ]; then \
 		echo "Cannot use the installed version of file ($$v) to"; \
 		echo "cross-compile file ${PACKAGE_VERSION}"; \
 		echo "Please install file ${PACKAGE_VERSION} locally first"; \
-		exit 1; \
+		echo "or use $(MAGIC).tgz with cmd: $(FILE_COMPILE) -C -m magic"; \
+		rm -f $(MAGIC); \
+		tar -zcf $(MAGIC).tgz magic; \
 	    fi; \
 	  fi)
-	$(FILE_COMPILE) -C -m magic
 	@rm -fr magic
